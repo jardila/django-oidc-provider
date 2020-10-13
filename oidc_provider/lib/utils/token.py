@@ -1,6 +1,8 @@
 from datetime import timedelta
 import time
 import uuid
+import jwt
+import logging
 
 from Cryptodome.PublicKey.RSA import importKey
 from django.utils import dateformat, timezone
@@ -110,7 +112,27 @@ def create_token(user, client, scope, id_token_dic=None):
     token = Token()
     token.user = user
     token.client = client
-    token.access_token = uuid.uuid4().hex
+    logging.error(user)
+    logging.error(client)
+    logging.error(scope)
+
+    payload = {
+        'client': client.name,
+        'scope': scope,
+        'exp': timezone.now() + timedelta(seconds=settings.get('OIDC_TOKEN_EXPIRE'))
+    }
+    if id_token_dic is not None:
+        payload['id_token_dic'] = id_token_dic
+    
+    if user is not None:
+        payload['user'] = user
+    
+    logging.error(payload)
+
+    myToken = jwt.encode(payload, settings.get('OIDC_SECRET_KEY'))
+    logging.error(myToken.decode())
+
+    token.access_token = myToken.decode()
 
     if id_token_dic is not None:
         token.id_token = id_token_dic

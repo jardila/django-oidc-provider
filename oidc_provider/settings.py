@@ -17,6 +17,13 @@ class DefaultSettings(object):
         REQUIRED. Used to log the user in. By default Django's LOGIN_URL will be used.
         """
         return settings.LOGIN_URL
+    
+    @property
+    def OIDC_SECRET_KEY(self):
+        """
+        REQUIRED. 
+        """
+        return settings.SECRET_KEY
 
     @property
     def SITE_URL(self):

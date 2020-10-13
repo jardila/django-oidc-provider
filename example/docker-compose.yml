@@ -1,0 +1,10 @@
+version: '2'
+services:
+
+  server_oidc:
+    container_name: server_oidc
+    build: .
+    ports:
+      - "8009:8000"
+    volumes:
+      - .:/srv/app

@@ -11,6 +11,7 @@ def migrate_response_type(apps, schema_editor):
         ('code token', 'code token (Hybrid Flow)'),
         ('code id_token', 'code id_token (Hybrid Flow)'),
         ('code id_token token', 'code id_token token (Hybrid Flow)'),
+        ('client_credentials', 'Client Credential Flow'),
     ]
     # ensure we get proper, versioned model with the deleted response_type field;
     # importing directly yields the latest without response_type
