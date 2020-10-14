@@ -39,14 +39,11 @@ class TokenIntrospectionEndpoint(object):
             logger.debug('[Introspection] No token provided')
             raise TokenIntrospectionError()
         try:
-            logger.error("[token] %s", self.params['token'])
             self.token = Token.objects.get(access_token=self.params['token'])
-            logger.error("[Model token] %s", self.token)
         except Token.DoesNotExist:
             logger.debug('[Introspection] Token does not exist: %s', self.params['token'])
             raise TokenIntrospectionError()
         if self.token.has_expired():
-            logger.error('[Introspection] Token is not valid: %s', self.params['token'])
             logger.debug('[Introspection] Token is not valid: %s', self.params['token'])
             raise TokenIntrospectionError()
 
@@ -54,13 +51,10 @@ class TokenIntrospectionEndpoint(object):
             self.client = Client.objects.get(
                 client_id=self.params['client_id'],
                 client_secret=self.params['client_secret'])
-            logger.error('[Model client]: %s', self.client)
         except Client.DoesNotExist:
             logger.debug('[Introspection] No valid client for id: %s',
                          self.params['client_id'])
             raise TokenIntrospectionError()
-        logger.error('[INTROSPECTION_SCOPE]: %s', INTROSPECTION_SCOPE)
-        logger.error('[self.client.scope]: %s', self.client.scope)
         if INTROSPECTION_SCOPE not in self.client.scope:
             logger.debug('[Introspection] Client %s does not have introspection scope',
                          self.params['client_id'])
@@ -68,8 +62,6 @@ class TokenIntrospectionEndpoint(object):
 
         self.id_token = self.token.id_token
 
-        logger.error('[OIDC_INTROSPECTION_VALIDATE_AUDIENCE_SCOPE]: %s', settings.get('OIDC_INTROSPECTION_VALIDATE_AUDIENCE_SCOPE'))
-        logger.error('[self.id_token]: %s', self.id_token)
         if settings.get('OIDC_INTROSPECTION_VALIDATE_AUDIENCE_SCOPE'):
             if not self.token.id_token:
                 logger.debug('[Introspection] Token not an authentication token: %s',

@@ -39,17 +39,11 @@ def extract_client_auth(request):
     """
     auth_header = request.META.get('HTTP_AUTHORIZATION', '')
 
-    logger.error('[auth_header] : %s', auth_header)
-
     if re.compile('^Basic\s{1}.+$').match(auth_header):
         b64_user_pass = auth_header.split()[1]
-        logger.error('[b64_user_pass] : %s', b64_user_pass)
         try:
             user_pass = b64decode(b64_user_pass).decode('utf-8').split(':')
-            logger.error('[user_pass] : %s', user_pass)
             client_id, client_secret = tuple(user_pass)
-            logger.error('[client_id] : %s', client_id)
-            logger.error('[client_secret] : %s', client_secret)
         except Exception:
             client_id = client_secret = ''
     else:
