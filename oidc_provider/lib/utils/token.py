@@ -127,11 +127,8 @@ def create_token(user, client, scope, id_token_dic=None):
     if user is not None:
         payload['user'] = user
 
-    logging.error(settings.get('OIDC_SECRET_KEY'))
-    kid = base64.b64encode(settings.get('OIDC_SECRET_KEY').encode('ascii'))
-    logging.error(kid)
-    logging.error(kid.decode('ascii'))
-    myToken = jwt.encode(payload, settings.get('OIDC_SECRET_KEY'), headers={'kid': kid.decode('ascii')})
+    kid = settings.get('OIDC_SECRET_KEY')
+    myToken = jwt.encode(payload, settings.get('OIDC_SECRET_KEY'), headers={'kid': kid})
     logging.error(myToken.decode())
 
     token.access_token = myToken.decode()
