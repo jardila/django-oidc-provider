@@ -208,6 +208,7 @@ class Token(BaseCodeTokenModel):
         settings.AUTH_USER_MODEL, null=True, verbose_name=_(u'User'), on_delete=models.CASCADE)
     access_token = models.CharField(max_length=255, unique=True, verbose_name=_(u'Access Token'))
     refresh_token = models.CharField(max_length=255, unique=True, verbose_name=_(u'Refresh Token'))
+    token_refresh_expires_at = models.DateTimeField(verbose_name=_(u'Expiration Date (Token Refresh)'), null=True)
     _id_token = models.TextField(verbose_name=_(u'ID Token'))
 
     class Meta:
@@ -236,6 +237,12 @@ class Token(BaseCodeTokenModel):
                 hashed_access_token[:len(hashed_access_token) // 2]
             )
         ).rstrip(b'=').decode('ascii')
+    
+    # Valida expiracion para el token refresh
+    def token_refresh_has_expired(self):
+        if self.token_refresh_expires_at == None:
+            return True
+        return timezone.now() >= self.token_refresh_expires_at
 
 
 class UserConsent(BaseCodeTokenModel):

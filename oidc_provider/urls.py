@@ -13,6 +13,7 @@ app_name = 'oidc_provider'
 urlpatterns = [
     url(r'^authorize/?$', views.AuthorizeView.as_view(), name='authorize'),
     url(r'^token/?$', csrf_exempt(views.TokenView.as_view()), name='token'),
+    url(r'^refresh/?$', csrf_exempt(views.TokenRefreshClientView.as_view()), name='token-refresh'),
     url(r'^userinfo/?$', csrf_exempt(views.userinfo), name='userinfo'),
     url(r'^end-session/?$', views.EndSessionView.as_view(), name='end-session'),
     url(r'^\.well-known/openid-configuration/?$', views.ProviderInfoView.as_view(),

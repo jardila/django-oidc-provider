@@ -1,0 +1,12 @@
+<validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="JWT is invalid" require-signed-tokens="false">
+    <openid-config url="http://191.232.165.21/.well-known/openid-configuration" />
+    <issuer-signing-keys>
+        <key>YzE0ZDU0OWM1NzRlNGQ4Y2YxNjI0MDRlZjBiMDQ1OTg=</key>
+    </issuer-signing-keys>
+    <decryption-keys>
+        <key>YzE0ZDU0OWM1NzRlNGQ4Y2YxNjI0MDRlZjBiMDQ1OTg=</key>
+    </decryption-keys>
+    <issuers>
+        <issuer>http://191.232.165.21/</issuer>
+    </issuers>
+</validate-jwt>

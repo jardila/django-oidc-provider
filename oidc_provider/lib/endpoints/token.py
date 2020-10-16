@@ -25,7 +25,6 @@ from oidc_provider import settings
 
 logger = logging.getLogger(__name__)
 
-
 class TokenEndpoint(object):
 
     def __init__(self, request):
@@ -33,7 +32,7 @@ class TokenEndpoint(object):
         self.params = {}
         self.user = None
         self._extract_params()
-
+        
     def _extract_params(self):
         client_id, client_secret = extract_client_auth(self.request)
 
@@ -272,6 +271,7 @@ class TokenEndpoint(object):
             'expires_in': settings.get('OIDC_TOKEN_EXPIRE'),
             'token_type': 'bearer',
             'scope': self.client._scope,
+            'refresh_token': token.refresh_token,
         }
 
     @classmethod

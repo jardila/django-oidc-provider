@@ -32,6 +32,7 @@ from oidc_provider.compat import get_attr_or_callable
 from oidc_provider.lib.claims import StandardScopeClaims
 from oidc_provider.lib.endpoints.authorize import AuthorizeEndpoint
 from oidc_provider.lib.endpoints.token import TokenEndpoint
+from oidc_provider.lib.endpoints.refresh import TokenRefreshEndpoint
 from oidc_provider.lib.errors import (
     AuthorizeError,
     ClientIdError,
@@ -201,6 +202,21 @@ class AuthorizeView(View):
 
             return redirect(uri)
 
+class TokenRefreshClientView(View):
+    def post(self, request, *args, **kwargs):
+        token = TokenRefreshEndpoint(request)
+
+        try:
+            token.validate_params()
+
+            dic = token.create_response_dic()
+
+            return TokenRefreshEndpoint.response(dic)
+
+        except TokenError as error:
+            return TokenRefreshEndpoint.response(error.create_dict(), status=400)
+        except UserAuthError as error:
+            return TokenRefreshEndpoint.response(error.create_dict(), status=403)
 
 class TokenView(View):
     def post(self, request, *args, **kwargs):
@@ -266,6 +282,7 @@ class ProviderInfoView(View):
 
         dic['authorization_endpoint'] = site_url + reverse('oidc_provider:authorize')
         dic['token_endpoint'] = site_url + reverse('oidc_provider:token')
+        dic['token_refresh_endpoint'] = site_url + reverse('oidc_provider:token-refresh')
         dic['userinfo_endpoint'] = site_url + reverse('oidc_provider:userinfo')
         dic['end_session_endpoint'] = site_url + reverse('oidc_provider:end-session')
         dic['introspection_endpoint'] = site_url + reverse('oidc_provider:token-introspection')

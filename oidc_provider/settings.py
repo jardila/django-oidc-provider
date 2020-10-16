@@ -121,6 +121,14 @@ class DefaultSettings(object):
         return 60*60
 
     @property
+    def OIDC_TOKEN_REFRESH_EXPIRE(self):
+        """
+        OPTIONAL. Token Refresh object expiration after been created.
+        Expressed in seconds.
+        """
+        return 60*60
+
+    @property
     def OIDC_USERINFO(self):
         """
         OPTIONAL. A string with the location of your function.

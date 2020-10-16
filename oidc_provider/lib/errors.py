@@ -147,8 +147,10 @@ class TokenError(Exception):
         'unsupported_grant_type': 'The authorization grant type is not '
                                   'supported by the authorization server',
 
-        'invalid_scope': 'The requested scope is invalid, unknown, malformed, '
-                         'or exceeds the scope granted by the resource owner',
+        'invalid_refresh_token': 'The refresh token is invalid, unknown, malformed, '
+                         'or has no been provided',
+
+        'expired_refresh_token': 'The refresh token has expired',
     }
 
     def __init__(self, error):
