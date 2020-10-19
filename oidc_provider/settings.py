@@ -19,6 +19,13 @@ class DefaultSettings(object):
         return settings.LOGIN_URL
     
     @property
+    def OIDC_ALLOW_PARAMS_JSON_BODY(self):
+        """
+        OPTIONAL. Used to allow send client credentials by json body instead of form-data
+        """
+        return True
+    
+    @property
     def OIDC_SECRET_KEY(self):
         """
         REQUIRED. 

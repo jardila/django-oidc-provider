@@ -3,8 +3,8 @@ services:
 
   server_oidc:
     container_name: server_oidc
-    build: .
+    build: ./
     ports:
       - "8009:8000"
     volumes:
-      - .:/srv/app
+      - ./site:/srv/app

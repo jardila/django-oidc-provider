@@ -1,27 +1,17 @@
-import inspect
-from base64 import urlsafe_b64encode
 import hashlib
+import inspect
+import json
 import logging
+from base64 import urlsafe_b64encode
+
 from django.contrib.auth import authenticate
-
 from django.http import JsonResponse
-
-from oidc_provider.lib.errors import (
-    TokenError,
-    UserAuthError,
-)
-from oidc_provider.lib.utils.oauth2 import extract_client_auth
-from oidc_provider.lib.utils.token import (
-    create_id_token,
-    create_token,
-    encode_id_token,
-)
-from oidc_provider.models import (
-    Client,
-    Code,
-    Token,
-)
 from oidc_provider import settings
+from oidc_provider.lib.errors import TokenError, UserAuthError
+from oidc_provider.lib.utils.oauth2 import extract_client_auth
+from oidc_provider.lib.utils.token import (create_id_token, create_token,
+                                           encode_id_token)
+from oidc_provider.models import Client, Code, Token
 
 logger = logging.getLogger(__name__)
 
@@ -38,17 +28,34 @@ class TokenEndpoint(object):
 
         self.params['client_id'] = client_id
         self.params['client_secret'] = client_secret
-        self.params['redirect_uri'] = self.request.POST.get('redirect_uri', '')
-        self.params['grant_type'] = self.request.POST.get('grant_type', '')
-        self.params['code'] = self.request.POST.get('code', '')
-        self.params['state'] = self.request.POST.get('state', '')
-        self.params['scope'] = self.request.POST.get('scope', '')
-        self.params['refresh_token'] = self.request.POST.get('refresh_token', '')
-        # PKCE parameter.
-        self.params['code_verifier'] = self.request.POST.get('code_verifier')
 
-        self.params['username'] = self.request.POST.get('username', '')
-        self.params['password'] = self.request.POST.get('password', '')
+        if settings.get('OIDC_ALLOW_PARAMS_JSON_BODY'):
+            body_unicode = self.request.body.decode('utf-8')
+            body = json.loads(body_unicode)
+            b_dict = dict(body)
+            self.params['redirect_uri'] = b_dict.get('redirect_uri', '')
+            self.params['grant_type'] = b_dict.get('grant_type', '')
+            self.params['code'] = b_dict.get('code', '')
+            self.params['state'] = b_dict.get('state', '')
+            self.params['scope'] = b_dict.get('scope', '')
+            self.params['refresh_token'] = b_dict.get('refresh_token', '')
+            # PKCE parameter.
+            self.params['code_verifier'] = b_dict.get('code_verifier', '')
+
+            self.params['username'] = b_dict.get('username', '')
+            self.params['password'] = b_dict.get('password', '')
+        else:
+            self.params['redirect_uri'] = self.request.POST.get('redirect_uri', '')
+            self.params['grant_type'] = self.request.POST.get('grant_type', '')
+            self.params['code'] = self.request.POST.get('code', '')
+            self.params['state'] = self.request.POST.get('state', '')
+            self.params['scope'] = self.request.POST.get('scope', '')
+            self.params['refresh_token'] = self.request.POST.get('refresh_token', '')
+            # PKCE parameter.
+            self.params['code_verifier'] = self.request.POST.get('code_verifier')
+
+            self.params['username'] = self.request.POST.get('username', '')
+            self.params['password'] = self.request.POST.get('password', '')
 
     def validate_params(self):
         try:

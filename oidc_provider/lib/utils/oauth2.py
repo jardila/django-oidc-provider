@@ -1,15 +1,14 @@
-from base64 import b64decode
+import json
 import logging
 import re
+from base64 import b64decode
 
 from django.http import HttpResponse
-
+from oidc_provider import settings
 from oidc_provider.lib.errors import BearerTokenError
 from oidc_provider.models import Token
 
-
 logger = logging.getLogger(__name__)
-
 
 def extract_access_token(request):
     """
@@ -46,6 +45,12 @@ def extract_client_auth(request):
             client_id, client_secret = tuple(user_pass)
         except Exception:
             client_id = client_secret = ''
+    elif settings.get('OIDC_ALLOW_PARAMS_JSON_BODY'):
+        body_unicode = request.body.decode('utf-8')
+        body = json.loads(body_unicode)
+        b_dict = dict(body)
+        client_id = b_dict.get('client_id','')
+        client_secret = b_dict.get('client_secret','')
     else:
         client_id = request.POST.get('client_id', '')
         client_secret = request.POST.get('client_secret', '')

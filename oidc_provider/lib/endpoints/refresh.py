@@ -1,19 +1,13 @@
 import inspect
+import json
 import logging
-from django.http import JsonResponse
 
+from django.http import JsonResponse
+from oidc_provider import settings
 from oidc_provider.lib.errors import TokenError
 from oidc_provider.lib.utils.oauth2 import extract_access_token
-from oidc_provider.lib.utils.token import (
-    create_token,
-    encode_id_token,
-)
-from oidc_provider.models import (
-    Client,
-    Code,
-    Token,
-)
-from oidc_provider import settings
+from oidc_provider.lib.utils.token import create_token, encode_id_token
+from oidc_provider.models import Client, Code, Token
 
 logger = logging.getLogger(__name__)
 
@@ -28,11 +22,19 @@ class TokenRefreshEndpoint(object):
 
     def _extract_params(self):
         token = extract_access_token(self.request)
-        logger.error(token)
 
-        self.params['scope'] = self.request.POST.get('scope', '')
         self.params['refresh_token'] = token
-        self.params['grant_type'] = self.request.POST.get('grant_type', '')
+
+        if settings.get('OIDC_ALLOW_PARAMS_JSON_BODY'):
+            body_unicode = self.request.body.decode('utf-8')
+            body = json.loads(body_unicode)
+            b_dict = dict(body)
+            logger.error(b_dict)
+            self.params['scope'] = b_dict.get('scope', '')
+            self.params['grant_type'] = b_dict.get('grant_type', '')
+        else:
+            self.params['scope'] = self.request.POST.get('scope', '')
+            self.params['grant_type'] = self.request.POST.get('grant_type', '')
 
     
     def validate_params(self):
